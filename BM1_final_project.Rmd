@@ -5,6 +5,18 @@ date: "December 9, 2017"
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+library(janitor)
+```
+
+##reading and cleaning the data
+```{r reading and cleaning the data}
+gh_project <- read_excel("GHProject_Dataset.xlsx", sheet = 1) %>% 
+  clean_names()
+```
 
 ```{r descriptive statistics}
 
@@ -48,3 +60,5 @@ output: html_document
 
 ```
 
+
+###Conclusion
