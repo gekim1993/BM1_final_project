@@ -97,7 +97,9 @@ gh_project %>%
 ```
 
 ```{r transformations}
-
+gh_project = 
+  gh_project %>%
+  mutate(log_losdays2 = log(losdays2))
 
 ```
 
