@@ -5,12 +5,46 @@ date: "December 9, 2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+```{r descriptive statistics}
+
 ```
 
-##reading and cleaning the data
-```{r}
+```{r plots}
+
+
+```
+
+
+```{r transformations}
+
+
+```
+
+```{r model selection}
+
+
+```
+
+
+```{r final model}
+
+
+
+```
+
+
+
+```{r model validation}
+
+
+```
+
+
+
+```{r check model assumption}
+
+
 
 ```
 
