@@ -15,7 +15,11 @@ library(janitor)
 ##reading and cleaning the data
 ```{r reading and cleaning the data}
 gh_project <- read_excel("GHProject_Dataset.xlsx", sheet = 1) %>% 
-  clean_names()
+  clean_names() %>% 
+  mutate(mews = as.factor(mews), cindex = as.factor(cindex), 
+         icu_flag = as.factor(icu_flag)) %>% 
+  arrange(patientid, visitid) %>% 
+  filter(!duplicated(patientid))
 ```
 
 ```{r descriptive statistics}
