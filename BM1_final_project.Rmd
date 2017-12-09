@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(leaps)
 library(tidyverse)
 library(readxl)
 library(janitor)
@@ -104,8 +105,23 @@ gh_project =
 ```
 
 ```{r model selection}
+best <- function(model, ...) 
+{
+  subsets <- regsubsets(formula(model), model.frame(model), ...)
+  subsets <- with(summary(subsets),
+                  cbind(p = as.numeric(rownames(which)), which, rss, rsq, adjr2, cp, bic))
+  
+  return(subsets)
+}  
 
+##Final datset for model
+gh_project <- gh_project %>% 
+  select(-patientid, -visitid, -admitdtm, -icu_flag, -postalcode, 
+         -facilityname, -facilityzip)
 
+multi_fit <- lm(log_losdays2 ~ ., data = gh_project)
+
+best(multi_fit)
 ```
 
 
