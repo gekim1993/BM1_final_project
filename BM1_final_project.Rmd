@@ -26,7 +26,7 @@ gh_project <- read_excel("GHProject_Dataset.xlsx", sheet = 1) %>%
 
 ```{r descriptive statistics}
 des_stat = gh_project %>%
-  select(-gender, -race, -maritalstatus, -facilityname, -insurancetype, -facilityzip, -admitdtm, -religion, -postalcode, -is30dayreadmit, -patientid, -visitid -mews, -cidex, -icu_flag) %>%
+  select(-gender, -race, -maritalstatus, -facilityname, -insurancetype, -facilityzip, -admitdtm, -religion, -postalcode, -is30dayreadmit, -patientid, -visitid -mews, -cindex, -icu_flag) %>%
   describe(na.rm = TRUE)
   
 gender = table(gh_project$gender) %>% prop.table()
@@ -39,6 +39,28 @@ mews = table(gh_project$mews) %>% prop.table()
 cindex = table(gh_project$cindex) %>% prop.table()
 icu_flag = table(gh_project$icu_flag) %>% prop.table()
 ```
+
+```{r recoding categorical var}
+library(forcats)
+gh_project$race = fct_collapse(gh_project$race, White = "White", Non_White = c("African Amer/Black","Asian","Native Amer/Alaskan","Natv Hawaii/Pacf Isl", "Other/Multiracial"))
+
+gh_project$maritalstatus = fct_collapse(gh_project$maritalstatus, Married = "Married", Not_Married = c("Civil Union","Divorced","Separated","Single", "Widowed"))
+
+gh_project$insurancetype = fct_collapse(gh_project$insurancetype, Private = "Private", Not_Private = c("Medicaid","Medicare"))
+
+gh_project$religion = fct_collapse(gh_project$religion, Catholic = "Catholic", Christian = "Christian", Other = c("Angelican","Hebrew","Hindu","Islam", "Jewish", "Mormon", "No Affiliation", "Non Denominational", "Other"))
+
+gh_project$insurancetype = fct_collapse(gh_project$insurancetype, Private = "Private", Not_Private = c("Medicaid","Medicare"))
+
+gh_project$mews = fct_collapse(gh_project$mews, Normal = c("0", "1"), Increase_caution = c("2", "3"), Further_deterioration = c("4", "5"), Immediate_action_required = c("6", "7", "8", "9", "10", "11", "12", "14"))
+
+gh_project$cindex = fct_collapse(gh_project$cindex, normal = "0", mild = c("1", "2"), moderate = "3", severe = "5")
+
+gh_project = gh_project %>%
+  filter(icu_flag == "0")
+# model only applies to patients who did not go to ICU
+```
+
 
 ```{r plots}
 library(purrr)
