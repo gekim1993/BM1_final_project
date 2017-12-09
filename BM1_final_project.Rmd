@@ -23,7 +23,17 @@ gh_project <- read_excel("GHProject_Dataset.xlsx", sheet = 1) %>%
 ```
 
 ```{r descriptive statistics}
+des_stat = gh_project %>%
+  select(-gender, -race, -maritalstatus, -facilityname, -insurancetype, -facilityzip, -admitdtm, -religion, -postalcode, -is30dayreadmit, -patientid, -visitid) %>%
+  describe(na.rm = TRUE)
+  
 
+gender = table(gh_project$gender) %>% prop.table()
+race = table(gh_project$race) %>% prop.table()
+marital_status = table(gh_project$maritalstatus)  %>% prop.table()
+insurance = table(gh_project$insurancetype) %>% prop.table()
+religion = table(gh_project$religion) %>% prop.table()
+readmit = table(gh_project$is30dayreadmit) %>% prop.table()
 ```
 
 ```{r plots}
