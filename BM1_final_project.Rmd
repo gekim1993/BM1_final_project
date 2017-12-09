@@ -90,11 +90,6 @@ attach(gh_project)
 
 hist(losdays2)
 hist(log(losdays2))
-
-gh_project %>%
-  keep(is.numeric) %>% 
-  pairs(~ageyear+mews+evisit+cindex+bmi, data=.)
-
 ```
 
 ```{r transformations}
