@@ -23,10 +23,27 @@ gh_project <- read_excel("GHProject_Dataset.xlsx", sheet = 1) %>%
 ```
 
 ```{r plots}
+library(purrr)
+library(tidyr)
+library(ggplot2)
 
+gh_project %>%
+  keep(is.numeric) %>% 
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_histogram()
+
+attach(gh_project)
+
+hist(losdays2)
+hist(log(losdays2))
+
+gh_project %>%
+  keep(is.numeric) %>% 
+  pairs(~ageyear+mews+evisit+cindex+bmi, data=.)
 
 ```
-
 
 ```{r transformations}
 
