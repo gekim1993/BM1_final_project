@@ -15,10 +15,21 @@ library(psych)
 
 ##reading and cleaning the data
 ```{r reading and cleaning the data}
-gh_project <- read_excel("GHProject_Dataset.xlsx", sheet = 1) %>% 
+gh_project_raw <- read_excel("GHProject_Dataset.xlsx", sheet = 1) %>% 
   clean_names() %>% 
   mutate(mews = as.factor(mews), cindex = as.factor(cindex), 
-         icu_flag = as.factor(icu_flag), gender = as.factor(gender), race = as.factor(race), religion = as.factor(religion), maritalstatus = as.factor(maritalstatus), insurancetype = as.factor(insurancetype)) %>% 
+         icu_flag = as.factor(icu_flag), gender = as.factor(gender), race =
+           as.factor(race), religion = as.factor(religion), maritalstatus =
+           as.factor(maritalstatus), insurancetype = as.factor(insurancetype)) 
+
+gh_duplicate <- gh_project_raw[gh_project_raw$patientid %in% gh_project_raw$patientid[duplicated(gh_project_raw$patientid)],] %>% 
+  group_by(patientid) %>% 
+  count() 
+
+##We got 69 patients with more than 1 visit, 68 had 2 visits, 1 had 3 visits.
+dim(gh_duplicate)
+
+gh_project <- gh_project_raw %>% 
   arrange(patientid, visitid) %>% 
   filter(!duplicated(patientid))
 
