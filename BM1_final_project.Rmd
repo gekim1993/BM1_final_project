@@ -143,14 +143,14 @@ gh_project %>%
 
 
 
-```{r model validation}
+```{r check model assumption}
 
 
 ```
 
 
 
-```{r check model assumption}
+```{r model validation}
 
 
 
