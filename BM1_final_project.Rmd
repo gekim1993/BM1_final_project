@@ -12,6 +12,7 @@ library(tidyverse)
 library(readxl)
 library(janitor)
 library(psych)
+library(HH)
 ```
 
 ##reading and cleaning the data
@@ -112,11 +113,23 @@ best <- function(model, ...)
 ##Final datset for model
 gh_project <- gh_project %>% 
   select(-patientid, -visitid, -admitdtm, -icu_flag, -postalcode, 
-         -facilityname, -facilityzip)
+         -facilityname, -facilityzip, -loshours, -losdays2)
 
 multi_fit <- lm(log_losdays2 ~ ., data = gh_project)
 
-best(multi_fit)
+
+View(best(multi_fit, nvmax = 30, method = "exhaustive"))
+
+final_model <- lm(log_losdays2 ~ is30dayreadmit + cindex + 
+                    evisit + ageyear + gender + maritalstatus + 
+                    insurancetype + bpsystolic + heartrate +
+                    respirationrate + bpdiastolic + o2sat, data = gh_project)
+
+vif(final_model)
+gh_project %>% 
+  dplyr::select(bpdiastolic, bpsystolic) %>% 
+  na.omit() %>% 
+  cor(x = .)
 ```
 
 
