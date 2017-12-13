@@ -163,6 +163,97 @@ gh_project_raw %>%
 # all 3 subjects lowest losdays2
 # lets see after deleting
 
+
+
+#Based on the residuals versus leverage plot, we see 1 observations(1682) indicating moderate leverage since its leverages is bigger than 0.2 but less than 0.5.
+
+
+#outliers in y  (56)
+stu_res<-rstandard(final_model)
+outliers_y = as.data.frame(stu_res)
+n = c(1:3430)
+outliers_y = cbind(n,outliers_y)
+
+outliers_y = outliers_y %>%
+  filter(abs(stu_res)>2.5) %>%
+  mutate(stu = stu_res[abs(stu_res)])
+  
+#outliers in x, hat value >0.5 very high, >2p/n = 0.0087 high, 0.2~0.5 moderate (1) 
+#15 parameters
+hat =  hatvalues(final_model)
+hat = round(hat,4)
+n = c(1:3430)
+hat = cbind(n,hat)
+hat_inf = as.data.frame(hat)%>% 
+  clean_names()%>%
+  filter(hat > 0.2)
+
+#influential observation (parameters = 16)
+#cook's distance >0.5, >0.2
+cook = cooks.distance(final_model)
+cook = as.data.frame(cook) 
+cook%>%
+filter(cook>0.2)
+cook[1682,1]
+
+#dffits>2sqrt(p/n) = 0.1323 or 1
+#influence = influence.measures(final_model)
+#summary(influence)
+#plot(rstudent(final_model) ~ hatvalues(final_model))
+dffit = dffits(final_model)
+dffit = cbind(n,dffit)
+dffit = as.data.frame(dffit) 
+inf_dffit = dffit %>%
+  filter(abs(dffit)>0.1323)
+num_dffit = inf_dffit$n#147
+
+#influential x outliers 
+x_inf = left_join(hat_inf,dffit,by = "n")%>%
+  filter(abs(dffit)>0.137)
+num_inf = x_inf$n #1
+
+#influential y outliers 
+y_inf = left_join(outliers_y,dffit,by = "n")%>%
+  filter(abs(dffit)>0.137)
+num_inf = c(num_inf,y_inf$n)%>%
+  unique() #53+1 = 54
+
+#omit NAs in the dataset 
+gh_project_remove = gh_project %>%
+  dplyr::select(is30dayreadmit, cindex, evisit, ageyear, gender,maritalstatus, insurancetype, bpsystolic, heartrate, respirationrate, bpdiastolic, o2sat,log_losdays2) %>%
+  na.omit()
+
+#remove influential points
+gh_project_remove1 = gh_project_remove
+for(i in 1:131){
+gh_project_remove1 = gh_project_remove1[-num_dffit[i],]}
+
+final_model_remove1 <- lm(log_losdays2 ~ is30dayreadmit + cindex + 
+                    evisit + ageyear + gender + maritalstatus + 
+                    insurancetype + bpsystolic + heartrate +
+                    respirationrate + bpdiastolic + o2sat, data = gh_project_remove1)
+
+summary(final_model_remove1)
+
+#remove influential x,y outliers 
+gh_project_remove2 = gh_project_remove
+for(i in 1:length(num_inf)){
+gh_project_remove2 = gh_project_remove2[-num_inf[i],]}
+
+final_model_remove2 <- lm(log_losdays2 ~ is30dayreadmit + cindex + 
+                    evisit + ageyear + gender + maritalstatus + 
+                    insurancetype + bpsystolic + heartrate +
+                    respirationrate + bpdiastolic + o2sat, data = gh_project_remove2)
+
+summary(final_model_remove2)
+
+summary(final_model)
+
+par(mfrow=c(2,2))
+plot(final_model_remove1)
+
+par(mfrow=c(2,2))
+plot(final_model_remove2)
 ```
 
 
