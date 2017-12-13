@@ -254,6 +254,20 @@ plot(final_model_remove1)
 
 par(mfrow=c(2,2))
 plot(final_model_remove2)
+
+#remove 3 observations based on residuals
+gh_project_remove3 = gh_project_remove
+x = c(3420, 1589, 1682)
+gh_project_remove3 = gh_project_remove3[-x,]
+final_model_remove3 <- lm(log_losdays2 ~ is30dayreadmit + cindex + 
+                    evisit + ageyear + gender + maritalstatus + 
+                    insurancetype + bpsystolic + heartrate +
+                    respirationrate + bpdiastolic + o2sat, data = gh_project_remove3)
+
+summary(final_model_remove3)
+
+par(mfrow=c(2,2))
+plot(final_model_remove3)
 ```
 
 
