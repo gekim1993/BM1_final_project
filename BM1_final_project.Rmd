@@ -8,11 +8,11 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(leaps)
-library(tidyverse)
 library(readxl)
 library(janitor)
 library(psych)
 library(HH)
+library(tidyverse)
 ```
 
 ##reading and cleaning the data
@@ -149,7 +149,19 @@ gh_project %>%
 
 
 ```{r check model assumption}
+par(mfrow=c(2,2))
+plot(final_model)
+# normality assumption - skewed to the left
 
+# obs 3420, 1589, 1682
+# 1589 BMI of 50 -3.178053
+# 3420 log_los -3.17805382
+# 1682 log_los -3.17805382
+
+gh_project_raw %>%
+  arrange(losdays2)
+# all 3 subjects lowest losdays2
+# lets see after deleting
 
 ```
 
