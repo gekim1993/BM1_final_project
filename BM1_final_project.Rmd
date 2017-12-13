@@ -41,7 +41,11 @@ gh_project <- gh_project_raw %>%
 des_stat = gh_project %>%
   select(-gender, -race, -maritalstatus, -facilityname, -insurancetype, -facilityzip, -admitdtm, -religion, -postalcode, -is30dayreadmit, -patientid, -visitid -mews, -cindex, -icu_flag) %>%
   describe(na.rm = TRUE)
-  
+
+#there is a BMI of 3.1 (min) and 122.7.  Both of these are impossible
+#there is a min temp of 11.85 52.275.  Again, both of these are incorrect.
+# funny bp values as well??
+
 gender = table(gh_project$gender) %>% prop.table()
 race = table(gh_project$race) %>% prop.table()
 marital_status = table(gh_project$maritalstatus)  %>% prop.table()
@@ -51,6 +55,7 @@ readmit = table(gh_project$is30dayreadmit) %>% prop.table()
 mews = table(gh_project$mews) %>% prop.table()
 cindex = table(gh_project$cindex) %>% prop.table()
 icu_flag = table(gh_project$icu_flag) %>% prop.table()
+
 ```
 
 ```{r recoding categorical var}
