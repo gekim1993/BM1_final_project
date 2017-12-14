@@ -119,7 +119,9 @@ gh_project =
 set.seed(1)
 train <- sample(3543,1772)
 
-sas_train_data <- gh_project[train,]
+train_data <- gh_project[train,]
+test_data <- gh_project[-train,]
+
 
 best <- function(model, ...) 
 {
@@ -131,11 +133,16 @@ best <- function(model, ...)
 }  
 
 ##Final datset for model
-gh_project <- gh_project %>% 
+train_data <- train_data %>% 
   select(-patientid, -visitid, -admitdtm, -icu_flag, -postalcode, 
          -facilityname, -facilityzip, -loshours, -losdays2)
 
-multi_fit <- lm(log_losdays2 ~ ., data = gh_project, subset = train)
+test_data <- test_data %>% 
+  select(-patientid, -visitid, -admitdtm, -icu_flag, -postalcode, 
+         -facilityname, -facilityzip, -loshours, -losdays2)
+
+
+multi_fit <- lm(log_losdays2 ~ ., data = train_data)
 
 
 View(best(multi_fit, nvmax = 30, method = "exhaustive"))
@@ -145,7 +152,7 @@ View(best(multi_fit, nvmax = 30, method = "exhaustive"))
 final_model <- lm(log_losdays2 ~ is30dayreadmit + cindex + 
                     evisit + ageyear + heartrate +
                     insurancetype + bpsystolic + temperature +
-                    respirationrate, data = gh_project[train,])
+                    respirationrate, data = train_data)
 
 vif(final_model)
 gh_project %>% 
@@ -296,7 +303,7 @@ boot.fn <- function(data, index){
                     evisit + ageyear + temperature +
                     insurancetype + bpsystolic + heartrate +
                     respirationrate, subset = index, 
-	               data = gh_project[train, ])))
+	               data = train_data)))
 }
 
 boot.adj.r <- function(data, index){
@@ -304,21 +311,25 @@ boot.adj.r <- function(data, index){
                     evisit + ageyear + temperature +
                     insurancetype + bpsystolic + heartrate +
                     respirationrate, subset = index, 
-	               data = gh_project[train, ]))$adj.r.squared)
+	               data = train_data))$adj.r.squared)
 }
 
 
 
 
 
-boot_coef <- boot(gh_project[train,], boot.fn, 100)
-boot_adj_r <- boot(gh_project[train,], boot.adj.r, 100)
+boot_coef <- boot(train_data, boot.fn, 100)
+boot_adj_r <- boot(train_data, boot.adj.r, 100)
 
 # How does it compare to the original (non-bootstrap) estimates?
 summary(final_model)
 
-##Assessing the prediction
-mean((mpg-predict(lm.fit, Auto))[-train]^2)
+
+
+# Use predict() and mean to calculate the MSPE for the 1317 obs used in validation.
+# MSPE mean square prediction error.
+test_data <- na.omit(test_data)
+mean((test_data$log_losdays2 - predict(final_model, test_data))^2)
 
 ```
 
