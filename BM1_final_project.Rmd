@@ -112,7 +112,7 @@ gh_project =
   mutate(log_losdays2 = log(losdays2))
 
 #write dataset as csv
-#write_csv(gh_project, path = "C:/Users/mphad/Documents/1st semester/Intro to Biostats/gh_project_data.csv")
+#write_csv(sas_train_data, path = "C:/Users/mphad/Documents/1st semester/Intro to Biostats/sas_train_data.csv")
 ```
 
 ```{r model selection}
