@@ -277,7 +277,7 @@ gh_project_remove3 = gh_project_remove3[-x,]
 final_model_remove3 <- lm(log_losdays2 ~ is30dayreadmit + cindex + 
                     evisit + ageyear + heartrate +
                     insurancetype + bpsystolic + temperature +
-                    respirationrate,, data = gh_project_remove3)
+                    respirationrate, data = gh_project_remove3)
 
 summary(final_model_remove3)
 
