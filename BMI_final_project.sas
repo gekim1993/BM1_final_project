@@ -1,4 +1,4 @@
-PROC Import datafile = "gh_project_data_no_na.csv" DBMS = CSV out = GH_data; GETNAMES = YES;
+PROC Import datafile = "sas_train_data.csv" DBMS = CSV out = GH_data; GETNAMES = YES;
 run;
 proc contents data = GH_data;
 run;
