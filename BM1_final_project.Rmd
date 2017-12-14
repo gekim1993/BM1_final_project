@@ -163,6 +163,12 @@ gh_project %>%
 
 
 ```{r final model}
+plot_crit <-regsubsets(log_losdays2 ~ ., data = gh_project[train,], nvmax = 30) 
+rs<-summary(plot_crit)
+par(mfrow=c(2,2))
+plot(2:23, rs$cp, xlab="No of parameters", ylab="Cp Statistic") 
+abline(0,1)
+plot(2:23, rs$adjr2, xlab="No of parameters", ylab="Adj R2")
 
 
 
@@ -175,25 +181,18 @@ par(mfrow = c(2,2))
 plot(final_model)
 # normality assumption - skewed to the left
 
-# obs 3420, 1589, 1682
-# 1589 BMI of 50 -3.178053
-# 3420 log_los -3.17805382
-# 1682 log_los -3.17805382
+# obs 1112, 1581, 1669
+
 
 gh_project_raw %>%
   arrange(losdays2)
 # all 3 subjects lowest losdays2
 # lets see after deleting
 
-
-
-#Based on the residuals versus leverage plot, we see 1 observations(1682) indicating moderate leverage since its leverages is bigger than 0.2 but less than 0.5.
-
-
-#outliers in y  (56)
+#outliers in y  (29)
 stu_res<-rstandard(final_model)
 outliers_y = as.data.frame(stu_res)
-n = c(1:3430)
+n = c(1:1753)
 outliers_y = cbind(n,outliers_y)
 
 outliers_y = outliers_y %>%
@@ -204,7 +203,7 @@ outliers_y = outliers_y %>%
 #15 parameters
 hat =  hatvalues(final_model)
 hat = round(hat,4)
-n = c(1:3430)
+n = c(1:1753)
 hat = cbind(n,hat)
 hat_inf = as.data.frame(hat)%>% 
   clean_names()%>%
@@ -216,7 +215,8 @@ cook = cooks.distance(final_model)
 cook = as.data.frame(cook) 
 cook%>%
 filter(cook>0.2)
-cook[1682,1]
+#no cook's distance > 0.2
+
 
 #dffits>2sqrt(p/n) = 0.1323 or 1
 #influence = influence.measures(final_model)
@@ -227,7 +227,7 @@ dffit = cbind(n,dffit)
 dffit = as.data.frame(dffit) 
 inf_dffit = dffit %>%
   filter(abs(dffit)>0.1323)
-num_dffit = inf_dffit$n#147
+num_dffit = inf_dffit$n#148
 
 #influential x outliers 
 x_inf = left_join(hat_inf,dffit,by = "n")%>%
@@ -238,11 +238,11 @@ num_inf = x_inf$n #1
 y_inf = left_join(outliers_y,dffit,by = "n")%>%
   filter(abs(dffit)>0.137)
 num_inf = c(num_inf,y_inf$n)%>%
-  unique() #53+1 = 54
+  unique() #30
 
 #omit NAs in the dataset 
-gh_project_remove = gh_project %>%
-  dplyr::select(is30dayreadmit, cindex, evisit, ageyear, gender,maritalstatus, insurancetype, bpsystolic, heartrate, respirationrate, bpdiastolic, o2sat,log_losdays2) %>%
+gh_project_remove = sas_train_data %>%
+  dplyr::select(is30dayreadmit, cindex, evisit, ageyear, insurancetype, heartrate, respirationrate, log_losdays2, temperature,bpsystolic) %>%
   na.omit()
 
 #remove influential points
@@ -251,9 +251,9 @@ for(i in 1:131){
 gh_project_remove1 = gh_project_remove1[-num_dffit[i],]}
 
 final_model_remove1 <- lm(log_losdays2 ~ is30dayreadmit + cindex + 
-                    evisit + ageyear + gender + maritalstatus + 
-                    insurancetype + bpsystolic + heartrate +
-                    respirationrate + bpdiastolic + o2sat, data = gh_project_remove1)
+                    evisit + ageyear + heartrate +
+                    insurancetype + bpsystolic + temperature +
+                    respirationrate, data = gh_project_remove1)
 
 summary(final_model_remove1)
 
@@ -263,9 +263,9 @@ for(i in 1:length(num_inf)){
 gh_project_remove2 = gh_project_remove2[-num_inf[i],]}
 
 final_model_remove2 <- lm(log_losdays2 ~ is30dayreadmit + cindex + 
-                    evisit + ageyear + gender + maritalstatus + 
-                    insurancetype + bpsystolic + heartrate +
-                    respirationrate + bpdiastolic + o2sat, data = gh_project_remove2)
+                    evisit + ageyear + heartrate +
+                    insurancetype + bpsystolic + temperature +
+                    respirationrate,, data = gh_project_remove2)
 
 summary(final_model_remove2)
 
@@ -279,12 +279,12 @@ plot(final_model_remove2)
 
 #remove 3 observations based on residuals
 gh_project_remove3 = gh_project_remove
-x = c(3420, 1589, 1682)
+x = c(1112, 1581, 1669)
 gh_project_remove3 = gh_project_remove3[-x,]
 final_model_remove3 <- lm(log_losdays2 ~ is30dayreadmit + cindex + 
-                    evisit + ageyear + gender + maritalstatus + 
-                    insurancetype + bpsystolic + heartrate +
-                    respirationrate + bpdiastolic + o2sat, data = gh_project_remove3)
+                    evisit + ageyear + heartrate +
+                    insurancetype + bpsystolic + temperature +
+                    respirationrate, data = gh_project_remove3)
 
 summary(final_model_remove3)
 
