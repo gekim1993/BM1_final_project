@@ -116,6 +116,11 @@ gh_project =
 ```
 
 ```{r model selection}
+set.seed(1)
+train <- sample(3543,1772)
+
+sas_train_data <- gh_project[train,]
+
 best <- function(model, ...) 
 {
   subsets <- regsubsets(formula(model), model.frame(model), ...)
@@ -130,7 +135,7 @@ gh_project <- gh_project %>%
   select(-patientid, -visitid, -admitdtm, -icu_flag, -postalcode, 
          -facilityname, -facilityzip, -loshours, -losdays2)
 
-multi_fit <- lm(log_losdays2 ~ ., data = gh_project)
+multi_fit <- lm(log_losdays2 ~ ., data = gh_project, subset = train)
 
 
 View(best(multi_fit, nvmax = 30, method = "exhaustive"))
