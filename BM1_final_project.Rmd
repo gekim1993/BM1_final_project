@@ -60,6 +60,13 @@ mews = table(gh_project$mews) %>% prop.table()
 cindex = table(gh_project$cindex) %>% prop.table()
 icu_flag = table(gh_project$icu_flag) %>% prop.table()
 
+
+
+gh_project = gh_project %>%
+  filter(bmi < 100 | is.na(bmi)) %>%
+  filter(temperature < 45 | is.na(temperature)) %>%
+  filter(temperature > 15 | is.na(temperature))
+  
 ```
 
 ```{r recoding categorical var}
@@ -105,7 +112,7 @@ gh_project =
   mutate(log_losdays2 = log(losdays2))
 
 #write dataset as csv
-# write_csv(gh_project, path = "C:/Users/mphad/Documents/1st semester/Intro to Biostats/gh_project_data.csv")
+#write_csv(gh_project, path = "C:/Users/mphad/Documents/1st semester/Intro to Biostats/gh_project_data.csv")
 ```
 
 ```{r model selection}
