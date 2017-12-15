@@ -239,7 +239,7 @@ num_inf = c(num_inf,y_inf$n)%>%
   unique() #30
 
 #omit NAs in the dataset 
-gh_project_remove = sas_train_data %>%
+gh_project_remove = train_data %>%
   dplyr::select(is30dayreadmit, cindex, evisit, ageyear, insurancetype, heartrate, respirationrate, log_losdays2, temperature,bpsystolic) %>%
   na.omit()
 
@@ -327,8 +327,10 @@ summary(final_model)
 # Use predict() and mean to calculate the MSPE for the 1317 obs used in validation.
 # MSPE mean square prediction error.
 test_data <- na.omit(test_data)
-mean((test_data$log_losdays2 - predict(final_model, test_data))^2)
-
+MSPE <- mean((test_data$log_losdays2 - predict(final_model, test_data))^2)
+##getting the length of stay error in days
+exp(sqrt(MSPE))
+##2.31 days of prediction error
 ```
 
 
