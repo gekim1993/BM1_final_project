@@ -90,9 +90,7 @@ gh_project = gh_project %>%
 # model only applies to patients who did not go to ICU
 ```
 
-
 ```{r plots}
-
 gh_project %>%
   keep(is.numeric) %>% 
   gather() %>% 
@@ -163,7 +161,7 @@ gh_project %>%
 
 
 ```{r final model}
-plot_crit <-regsubsets(log_losdays2 ~ ., data = gh_project[train,], nvmax = 30) 
+plot_crit <- regsubsets(log_losdays2 ~ ., data = train_data, nvmax = 30) 
 rs<-summary(plot_crit)
 par(mfrow=c(2,2))
 plot(2:23, rs$cp, xlab="No of parameters", ylab="Cp Statistic") 
