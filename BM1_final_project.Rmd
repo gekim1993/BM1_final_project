@@ -241,7 +241,7 @@ num_inf = c(num_inf,y_inf$n)%>%
   unique() #30
 
 #omit NAs in the dataset 
-gh_project_remove = sas_train_data %>%
+gh_project_remove = train_data %>%
   dplyr::select(is30dayreadmit, cindex, evisit, ageyear, insurancetype, heartrate, respirationrate, log_losdays2, temperature,bpsystolic) %>%
   na.omit()
 
