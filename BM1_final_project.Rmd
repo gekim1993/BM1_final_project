@@ -170,8 +170,6 @@ plot(2:23, rs$cp, xlab="No of parameters", ylab="Cp Statistic")
 abline(0,1)
 plot(2:23, rs$adjr2, xlab="No of parameters", ylab="Adj R2")
 
-
-
 ```
 
 
@@ -226,17 +224,17 @@ dffit = dffits(final_model)
 dffit = cbind(n,dffit)
 dffit = as.data.frame(dffit) 
 inf_dffit = dffit %>%
-  filter(abs(dffit)>0.1323)
-num_dffit = inf_dffit$n#148
+  filter(abs(dffit)>0.15)
+num_dffit = inf_dffit$n#110
 
 #influential x outliers 
 x_inf = left_join(hat_inf,dffit,by = "n")%>%
-  filter(abs(dffit)>0.137)
+  filter(abs(dffit)>0.15)
 num_inf = x_inf$n #1
 
 #influential y outliers 
 y_inf = left_join(outliers_y,dffit,by = "n")%>%
-  filter(abs(dffit)>0.137)
+  filter(abs(dffit)>0.15)
 num_inf = c(num_inf,y_inf$n)%>%
   unique() #30
 
